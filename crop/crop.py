@@ -22,7 +22,7 @@ from tqdm import tqdm
 from crop_generator import CropGenerator
 from crop_generator_classifier import CropGeneratorClassifier
 sys.path.append('..')
-from UserParams import UserParams
+from content.MARS_Net.UserParams import UserParams
 
 
 def crop_dataset(round_num, dataset_name, repeat_index, input_size, output_size, img_folder, mask_folder, dataset_folder, img_format, crop_mode, crop_patches, augmentation_factor):
