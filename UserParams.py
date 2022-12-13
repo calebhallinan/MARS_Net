@@ -34,7 +34,7 @@ class UserParams:
         # ['mDia_raw_unet', 'mDia_raw_VGG19_dropout']
         # ['paxillin_TIRF_normalize_cropped_unet_patience_10', 'paxillin_TIRF_normalize_cropped_VGG19_dropout_patience_10']
         # 'FNA_VGG19_MTL_cls0_reg0_aut0_seg1_input256_patience_10' # 'spheroid_test_VGG19_minmax_normalize' # 'FNA_VGG19_MTL_cls1_reg0_aut0_seg0.75_input256' # 'FNA_VGG19_MTL_auto_reg_aut_input256_patience_10' # 'FNA_CV_VGG19_MTL_auto_input256' # 'unet_encoder_classifier' # 'FNA_CV_VGG19_MTL_auto_reg_aut_input256' # 'FNA_VGG19_classifier_input256' #'FNA_CV_VGG19_classifier_binary_input256' # 'spheroid_VGG19_freeze' #'single_micro_small_unet' # 'cryptic_VGG19D_temporal_context_residual' # 'single_micro_VGG19D_temporal_context_residual' # 'cryptic_VGG19D_temporal_distributed_v2' # 'organoid_VGG19_dropout_crop_even' # 'cryptic_VGG19_dropout_mm_patience_10'
-        self.strategy_type = 'VGG19_dropout_overfit' # 'Multi_VGG19D'
+        self.strategy_type = 'demo_VGG19_dropout' # 'Multi_VGG19D'
         self.self_training_type = None
         self.dataset_folders = '../assets/'
         self.img_format = '.png'
@@ -61,23 +61,13 @@ class UserParams:
 
                 if 'multi_micro' in str(self.strategy_type):
                     # if mode == 'train':  # don't crop since I manually move cropped files, commented in 3/15/2021
-                    self.dataset_folders = ['../assets/','../assets/','../assets/','../assets/','../assets/',
-                                           '../assets/mDia_chauncey/','../assets/mDia_chauncey/','../assets/mDia_chauncey/','../assets/mDia_chauncey/','../assets/mDia_chauncey/',
-                                           '../assets/','../assets/','../assets/','../assets/','../assets/','../assets/']
-                    self.img_folders = ['/img/','/img/','/img/','/img/','/img/',
-                                        '/raw/','/raw/','/raw/','/raw/','/raw/',
-                                        '/img_cropped/','/img_cropped/','/img_cropped/','/img_cropped/','/img_cropped/','/img_cropped/']
-                    self.mask_folders = ['/mask_fixed/','/mask_fixed/','/mask_fixed/','/mask_fixed/','/mask_fixed/',
-                                         '/mask/','/mask/','/mask/','/mask/','/mask/',
-                                         '/mask_cropped/','/mask_cropped/','/mask_cropped/','/mask_cropped/','/mask_cropped/','/mask_cropped/']
+                    self.dataset_folders = ['../assets/']
+                    self.img_folders = ['/img/']
+                    self.mask_folders = ['/mask']
 
-                    self.frame_list = [2]
-                    self.dataset_names = ['040119_PtK1_S01_01_phase_3_DMSO_nd_03', '040119_PtK1_S01_01_phase_2_DMSO_nd_02',
-                                          '040119_PtK1_S01_01_phase_2_DMSO_nd_01', '040119_PtK1_S01_01_phase_ROI2',
-                                          '040119_PtK1_S01_01_phase', '1121-1', '1121-3', '1121-4', '1121-5', '1121-6',
-                                          'Paxilin-HaloTMR-TIRF3', 'Paxilin-HaloTMR-TIRF4', 'Paxilin-HaloTMR-TIRF5',
-                                           'Paxilin-HaloTMR-TIRF6', 'Paxilin-HaloTMR-TIRF7', 'Paxilin-HaloTMR-TIRF8']
-                    self.model_names = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P']
+                    self.frame_list = [3]
+                    self.dataset_names = ['demo_data']
+                    self.model_names = ['A']
                     self.REPEAT_MAX = 1
 
                 elif 'single_micro' in str(self.strategy_type):
@@ -419,25 +409,15 @@ class UserParams:
                     self.REPEAT_MAX = 1
 
 
-                elif 'multi_micro' in str(self.strategy_type):
+                elif 'demo' in str(self.strategy_type):
                     # if mode == 'train':  # don't crop since I manually move cropped files, commented in 3/15/2021
-                    self.dataset_folders = ['../assets/','../assets/','../assets/','../assets/','../assets/',
-                                           '../assets/mDia_chauncey/','../assets/mDia_chauncey/','../assets/mDia_chauncey/','../assets/mDia_chauncey/','../assets/mDia_chauncey/',
-                                           '../assets/','../assets/','../assets/','../assets/','../assets/','../assets/']
-                    self.img_folders = ['/img/','/img/','/img/','/img/','/img/',
-                                        '/raw/','/raw/','/raw/','/raw/','/raw/',
-                                        '/img_cropped/','/img_cropped/','/img_cropped/','/img_cropped/','/img_cropped/','/img_cropped/']
-                    self.mask_folders = ['/mask_fixed/','/mask_fixed/','/mask_fixed/','/mask_fixed/','/mask_fixed/',
-                                         '/mask/','/mask/','/mask/','/mask/','/mask/',
-                                         '/mask_cropped/','/mask_cropped/','/mask_cropped/','/mask_cropped/','/mask_cropped/','/mask_cropped/']
+                    self.dataset_folders = ['../assets/']
+                    self.img_folders = ['/img/']
+                    self.mask_folders = ['/mask']
 
-                    self.frame_list = [6,10]
-                    self.dataset_names = ['040119_PtK1_S01_01_phase_3_DMSO_nd_03', '040119_PtK1_S01_01_phase_2_DMSO_nd_02',
-                                          '040119_PtK1_S01_01_phase_2_DMSO_nd_01', '040119_PtK1_S01_01_phase_ROI2',
-                                          '040119_PtK1_S01_01_phase', '1121-1', '1121-3', '1121-4', '1121-5', '1121-6',
-                                          'Paxilin-HaloTMR-TIRF3', 'Paxilin-HaloTMR-TIRF4', 'Paxilin-HaloTMR-TIRF5',
-                                           'Paxilin-HaloTMR-TIRF6', 'Paxilin-HaloTMR-TIRF7', 'Paxilin-HaloTMR-TIRF8']
-                    self.model_names = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P']
+                    self.frame_list = [3]
+                    self.dataset_names = ['demo_data_all']
+                    self.model_names = ['A']
                     self.REPEAT_MAX = 1
 
                 elif 'single_micro' in str(self.strategy_type):
