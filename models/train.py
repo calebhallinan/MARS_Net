@@ -24,10 +24,10 @@ from debug_utils import *
 from content.MARS_Net.UserParams import UserParams
 from custom_callback import TimeHistory, TrainableLossWeightsCallback
 from model_builder import build_model_train
-from data_generator_MTL import get_data_generator_MTL
-from data_generator_classifier import get_data_generator_classifier
-from train_data_generator import get_data_generator
-from train_data_generator_3D import get_data_generator_3D, get_data_generator_3D_all
+from content.MARS_Net.data_handle.data_generator_MTL import get_data_generator_MTL
+from content.MARS_Net.data_handle.data_generator_classifier import get_data_generator_classifier
+from content.MARS_Net.data_handle.train_data_generator import get_data_generator
+from content.MARS_Net.data_handle.train_data_generator_3D import get_data_generator_3D, get_data_generator_3D_all
 
 
 def train_model(constants, model_index, frame, repeat_index, history_path):
