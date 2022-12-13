@@ -6,7 +6,7 @@
 '''
 
 import os
-from models.model_utils import get_available_gpu, find_param_after_string
+from content.MARS_Net.models.model_utils import get_available_gpu, find_param_after_string
 # tensorflow import must come after os.environ gpu setting
 os.environ["CUDA_VISIBLE_DEVICES"] = '0'  # get_available_gpu()
 import argparse
