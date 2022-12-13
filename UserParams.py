@@ -682,102 +682,104 @@ class UserParams:
             assert (len(self.img_folders) == len(self.dataset_names))
 
 
-    # ------------- helper functions -----------
-    def get_args(self):
+    # ------------- helper functions ------------
+
+    def get_crop_args(self):
         parser = argparse.ArgumentParser()
 
-        crop_mode = 'random'
-        if 'crop_even' in str(self.strategy_type) or 'temporal_' in str(self.strategy_type) or 'FNA_' in str(self.strategy_type):
+        if '_even' in str(self.strategy_type):
             crop_mode = 'even'
-
-        if 'patience_10' in str(self.strategy_type):
-            patience = 10
-            epochs = 100
         else:
-            patience = 3
-            epochs = 100
+            crop_mode = 'random'
 
         if 'input1024' in str(self.strategy_type):
-            crop_mode = crop_mode + '_input1024'
             input_size = 1024
             crop_patches = 12
-            crop_batch_size = 8
-            train_batch_size = 16
-        elif 'input512' in str(self.strategy_type):
-            crop_mode = crop_mode + '_input512'
-            input_size = 512
-            crop_patches = 24
-            crop_batch_size = 16
-            train_batch_size = 16
+            batch_size = 8
         elif "input256_crop200" in str(self.strategy_type):
             input_size = 256
             crop_patches = 200
-            crop_batch_size = 128
+            batch_size = 128
         elif "input256" in str(self.strategy_type):
-            crop_mode = crop_mode + '_input256'
             input_size = 256
             crop_patches = 50
-            crop_batch_size = 32
-            train_batch_size = 32
+            batch_size = 32
         elif "input192" in str(self.strategy_type):
-            crop_mode = crop_mode + '_input192'
             input_size = 192
             crop_patches = 200
-            crop_batch_size = 128
-            train_batch_size = 64
-        elif "_3D" in str(self.strategy_type):
-            input_size = 128
-            crop_patches = 200
-            crop_batch_size = 128
-            train_batch_size = 16
+            batch_size = 128
         elif "input96" in str(self.strategy_type):
             input_size = 96
             crop_patches = 200
-            crop_batch_size = 128
-            train_batch_size = 64
+            batch_size = 128
         elif "input80" in str(self.strategy_type):
             input_size = 80
             crop_patches = 200
-            crop_batch_size = 128
-            train_batch_size = 64
-
+            batch_size = 128
         elif "input64" in str(self.strategy_type):
             input_size = 64
             crop_patches = 200
-            crop_batch_size = 128
-            train_batch_size = 64
-        elif "temporal" in str(self.strategy_type):
-            input_size = 128
-            crop_patches = 200
-            crop_batch_size = 128
-            train_batch_size = 32
-        elif "spheroid_test" in str(self.strategy_type):
-            patience = 5
-            input_size = 128
-            crop_patches = 200
-            crop_batch_size = 128
-            train_batch_size = 64
+            batch_size = 128
         else:
             input_size = 128
             crop_patches = 200
-            crop_batch_size = 128
-            train_batch_size = 64  # reduce this batch_size if GPU memory error occurs
+            batch_size = 128
 
-        output_size = input_size - 60
+        output_size = input_size-60
 
-        parser.add_argument("--input_size", type=int, default=input_size)
-        parser.add_argument("--input_depth", type=int, default=16)
-        parser.add_argument("--output_size", type=int, default=output_size)
-        parser.add_argument("--crop_mode", type=str, default=crop_mode)
-        parser.add_argument("--crop_patches", type=int, default=crop_patches)
-        parser.add_argument("--crop_batch_size", type=int, default=crop_batch_size) # how many images to augment at once
+        augmentation_factor = 50
+        parser.add_argument("--input_size", type = int, default = input_size)
+        parser.add_argument("--output_size", type = int, default = output_size)
+        parser.add_argument("--crop_mode", type = str, default = crop_mode)
+        parser.add_argument("--crop_patches", type = int, default = crop_patches)
+        parser.add_argument("--batch_size", type = int, default = batch_size)  # how many images to augment at once
+        parser.add_argument("--augmentation_factor", type = int, default = augmentation_factor)
+        
+        args = parser.parse_args()
+    
+        return args
+    
+    
+    def get_train_args(self): 
+        parser = argparse.ArgumentParser() 
+
+        if 'patience_10' in str(self.strategy_type):
+            patience = 10
+            epochs = 300
+        else:
+            patience = 10
+            epochs = 300
+
+        if 'input1024' in str(self.strategy_type):
+            input_size = 1024
+            batch_size = 16
+        elif "input256" in str(self.strategy_type):
+            input_size = 256
+            batch_size = 32
+        elif "input192" in str(self.strategy_type):
+            input_size = 192
+            batch_size = 64
+        elif "input96" in str(self.strategy_type):
+            input_size = 96
+            batch_size = 64
+        elif "input80" in str(self.strategy_type):
+            input_size = 80
+            batch_size = 64
+        elif "input64" in str(self.strategy_type):
+            input_size = 64
+            batch_size = 64
+        else:
+            input_size = 128
+            batch_size = 64
+        
+        parser.add_argument("--input_size", type = int, default = input_size)
         parser.add_argument("--cropped_boundary", type = int, default = 30)
-        parser.add_argument("--train_batch_size", type = int, default = train_batch_size)
+        parser.add_argument("--batch_size", type = int, default = batch_size)
         parser.add_argument("--epochs", type = int, default = epochs)
         parser.add_argument("--validation_split", type = int, default = 0.2)
         parser.add_argument("--patience", type = int, default = patience)
 
-        args = parser.parse_args("")
+        args = parser.parse_args()
         return args
     
     
@@ -816,9 +818,7 @@ class UserParams:
         root_path = '../crop/crop_results/crop_round{}_{}/'.format(self.round_num, self.strategy_type)
 
         if self.round_num == 1:
-            if 'spheroid' in str(self.strategy_type):
-                root_path = '../crop/crop_results/crop_round1_spheroid/'
-            elif 'cryptic' in str(self.strategy_type):
+            if 'cryptic' in str(self.strategy_type):
                 if '_combined' in str(self.strategy_type):
                     root_path = '../crop/crop_results/crop_round1_VGG16/'
                 elif '_heq' in str(self.strategy_type):
@@ -836,8 +836,7 @@ class UserParams:
                     self.strategy_type == 'VGG19_batchnorm' or self.strategy_type == 'VGG19_dropout_batchnorm' or \
                     self.strategy_type == 'Res50V2' or self.strategy_type == 'Dense201' or \
                     self.strategy_type == 'deeplabv3' or self.strategy_type == 'EFF_B7' or self.strategy_type == 'InceptionResV2' or \
-                    'imagenet_pretrained' in self.strategy_type or \
-                    'unet' in self.strategy_type or self.strategy_type == 'dice' or self.strategy_type == 'l2':
+                    self.strategy_type == 'unet' or self.strategy_type == 'dice' or self.strategy_type == 'l2':
                 root_path = '../crop/crop_results/crop_round1_VGG16/'
 
             elif 'paxillin_TIRF_normalize_cropped' in self.strategy_type:
@@ -883,11 +882,6 @@ class UserParams:
             weights_path = '../models/results/model_round1_VGG19_dropout/model_frame34_ABCD_repeat0.hdf5'
         elif 'VGG19_dropout_mm' in str(self.strategy_type):
             weights_path = '../models/results/model_round1_generalist_VGG19_dropout/model_frame2_A_repeat0.hdf5'
-        elif 'VGG19_imagenet_pretrained' in str(self.strategy_type):
-            weights_path = '../models/results/model_round1_VGG19_imagenet_classifier/model_frame0_A_repeat0.hdf5'
-        elif 'unet_imagenet_pretrained' in str(self.strategy_type):
-            weights_path = '../models/results/model_round1_unet_encoder_classifier/model_frame0_A_repeat0.hdf5'
-
         elif "mask_denoising" == str(self.strategy_type):
             weights_path = 'results/model_round{}_{}/model'.format(self.round_num, self.strategy_type)+str(frame)+'_' + model_name +'.hdf5'
 
@@ -954,7 +948,7 @@ class UserParams:
 
     def update_eval_config(self, predict_path_index):
         predict_path = self.predict_path_list[predict_path_index]
-        # print('update_eval_config', predict_path_index, predict_path)
+        print('update_eval_config', predict_path_index, predict_path)
 
         self.img_folder = '/img/'
 
@@ -1004,30 +998,6 @@ class UserParams:
                     if "one_generalist" in str(predict_path):
                         self.dataset_folders = '../../assets/test_one_generalist/'
                         self.model_names = ['All']
-                    self.REPEAT_MAX = 1
-
-                elif 'spheroid' in str(predict_path):
-                    self.dataset_folders = ['../assets/Spheroid/','../assets/Spheroid/','../assets/Spheroid/',
-                                            '../assets/Spheroid/','../assets/Spheroid/','../assets/Spheroid/',
-                                            '../assets/Spheroid/','../assets/Spheroid/','../assets/Spheroid/',
-                                            '../assets/Spheroid/','../assets/Spheroid/','../assets/Spheroid/',
-                                            '../assets/Spheroid/','../assets/Spheroid/','../assets/Spheroid/',
-                                            '../assets/Spheroid/','../assets/Spheroid/','../assets/Spheroid/',
-                                            '../assets/Spheroid/','../assets/Spheroid/','../assets/Spheroid/',
-                                            '../assets/Spheroid/','../assets/Spheroid/']
-                    self.img_folders = ['/img/','/img/','/img/','/img/','/img/','/img/','/img/','/img/','/img/','/img/',
-                                        '/img/','/img/','/img/','/img/','/img/','/img/','/img/','/img/','/img/','/img/',
-                                        '/img/','/img/','/img/']
-                    self.mask_folders = ['/mask/','/mask/','/mask/','/mask/','/mask/','/mask/','/mask/','/mask/','/mask/','/mask/',
-                                         '/mask/','/mask/','/mask/','/mask/','/mask/','/mask/','/mask/','/mask/','/mask/','/mask/',
-                                         '/mask/','/mask/','/mask/']
-
-                    self.frame_list = [1]
-                    self.dataset_names = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
-                                          '11', '12', '13', '14', '15', '16', '17', '18', '19',
-                                          '20', '21', '22', '23']
-                    self.model_names = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
-                                        'Q', 'R', 'S', 'T', 'U', 'V', 'W']
                     self.REPEAT_MAX = 1
 
                 elif "predict_wholeframe_round1_mDia" in str(predict_path):
@@ -1104,20 +1074,3 @@ class UserParams:
                 folder_name = folder_name + '_'
 
         return folder_name
-
-    def get_save_prediction_path(self, dataset_name, model_name, frame, repeat_index):
-
-        root_prediciton_path = "results/predict_wholeframe_round{}_{}/".format(self.round_num,
-                                                                               self.strategy_type)
-
-        if self.self_training_type is None:
-            save_path = root_prediciton_path + '{}/frame{}_{}_repeat{}/'.format(dataset_name, str(frame), model_name,
-                                                                     str(repeat_index))
-        else:
-            save_path = root_prediciton_path + '{}_{}/frame{}_repeat{}/'.format(model_name, dataset_name, str(frame),
-                                                                     str(repeat_index))
-        print('save_path:', save_path)
-        if os.path.isdir(save_path) == 0:
-            os.makedirs(save_path)
-
-        return save_path
