@@ -6,7 +6,7 @@ Prepare dataset for Multiple Task Learning
 Get evenly cropped FNA images for training and prediction
 Includes processing and random shuffling operations
 '''
-from data_processor import preprocess_input, preprocess_output, normalize_input, preprocess_per_input_image
+from content.MARS_Net.data_handle.data_processor import preprocess_input, preprocess_output, normalize_input, preprocess_per_input_image
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.utils import Sequence
@@ -19,7 +19,8 @@ import glob
 import random
 import numpy as np
 import pickle
-from data_generator_utils import *
+from content.MARS_Net.data_handle.data_generator_utils import *
+
 
 
 def get_data_generator_MTL(dataset_names, repeat_index, crop_mode, img_format, train_or_predict_mode):
