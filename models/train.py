@@ -82,7 +82,7 @@ def train_model(constants, model_index, frame, repeat_index, history_path):
                         repeat_index, args.crop_mode, constants.img_format, aug_batch_size, process_type)
     else:
         aug_batch_size = 64
-        train_x, train_y, valid_x, valid_y = get_data_generator(constants.round_num, train_val_dataset_names,
+        train_x, train_y, valid_x, valid_y = get_data_generators(constants.round_num, train_val_dataset_names,
                     model_name, frame, repeat_index, args.crop_mode, constants.img_format, aug_batch_size, process_type, history_path)
 
     if "deeplabv3" == str(constants.strategy_type) or "EFF_B" in str(constants.strategy_type) \
