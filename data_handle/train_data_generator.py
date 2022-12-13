@@ -53,7 +53,7 @@ def get_cropped_filenames(round_num, dataset_names, frame, repeat_index, img_for
     all_mask_filenames = []
 
     for dataset_name in [dataset_names]: ##### CALEB MADE CHANGE to list when using 1
-        crop_path = '../crop/generated/crop_round{}_{}/'.format(round_num, dataset_name)
+        crop_path = 'MARS_Net/crop/generated/crop_round{}_{}/'.format(round_num, dataset_name)
         crop_path_img = crop_path + f'img_repeat{repeat_index}/'
         crop_path_mask = crop_path + f'mask_repeat{repeat_index}/'
 
