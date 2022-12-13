@@ -8,7 +8,7 @@ Contains debugging functions useful for deep learning research
 import sys
 sys.path.append('..')
 sys.path.append('../data_handle')
-from UserParams import UserParams
+from content.MARS_Net.UserParams import UserParams
 from data_processor import get_std_mean_from_images
 
 import math
