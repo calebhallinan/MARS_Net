@@ -5,7 +5,7 @@ Date 5/17/2021
 preprocess cropped images by shuffling, splitting (training, validation, and test sets) and standardizing
 augment preprocessed images in-memory
 '''
-from data_processor import preprocess_input, preprocess_output, normalize_input, preprocess_per_input_image
+from content.MARS_Net.data_handle.data_processor import preprocess_input, preprocess_output, normalize_input, preprocess_per_input_image
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.utils import Sequence
@@ -17,7 +17,7 @@ import glob
 import random
 import numpy as np
 import pickle
-from data_generator_utils import *
+from content.MARS_Net.data_handle.data_generator_utils import *
 
 
 def get_data_generator_3D(dataset_names, frame, repeat_index, crop_mode, img_format, aug_batch_size, process_type):
