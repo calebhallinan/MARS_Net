@@ -8,7 +8,7 @@ prepare generator to lazily load them
 
 referenced: https://medium.com/@mrgarg.rajat/training-on-large-datasets-that-dont-fit-in-memory-in-keras-60a974785d71
 '''
-from data_processor import *
+from content.MARS_Net.data_handle.data_processor import *
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.utils import Sequence
@@ -21,7 +21,7 @@ import random
 import numpy as np
 import pickle
 import cv2
-from data_generator_utils import *
+from content.MARS_Net.data_handle.data_generator_utils import *
 
 
 def get_data_generator(round_num, dataset_names, model_name, frame, repeat_index, crop_mode, img_format, aug_batch_size, process_type, save_path):
