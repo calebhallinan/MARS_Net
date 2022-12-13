@@ -21,7 +21,7 @@ from tensorflow.keras import backend as K
 from tensorflow.keras.utils import plot_model
 
 from debug_utils import *
-from UserParams import UserParams
+from content.MARS_Net.UserParams import UserParams
 from custom_callback import TimeHistory, TrainableLossWeightsCallback
 from model_builder import build_model_train
 from data_generator_MTL import get_data_generator_MTL
