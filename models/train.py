@@ -32,8 +32,12 @@ from content.MARS_Net.data_handle.train_data_generator_3D import get_data_genera
 
 def train_model(constants, model_index, frame, repeat_index, history_path):
     model_name = constants.model_names[model_index]
+    dataset_folder = constants.dataset_folders[model_index]
+    dataset_name = constants.dataset_names[model_index]
+    img_folder = constants.img_folders[model_index]
+    img_path = dataset_folder + dataset_name + img_folder
     print(' round_num:', constants.round_num, ' model name:', model_name, ' frame:', frame, ' repeat_index:', repeat_index)
-    args = constants.get_args()  # get hyper parameters
+    args = constants.get_train_args()  # get hyper parameters
 
     # leave-one-movie-out cross validation so don't use the test movie
     # CH: delete for just one dataset 2/24
