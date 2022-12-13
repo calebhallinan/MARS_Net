@@ -9,7 +9,7 @@ import sys
 sys.path.append('..')
 sys.path.append('../data_handle')
 from content.MARS_Net.UserParams import UserParams
-from data_processor import get_std_mean_from_images
+from content.MARS_Net.data_processor import get_std_mean_from_images
 
 import math
 import os
