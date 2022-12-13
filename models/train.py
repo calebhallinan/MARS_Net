@@ -36,8 +36,10 @@ def train_model(constants, model_index, frame, repeat_index, history_path):
     args = constants.get_args()  # get hyper parameters
 
     # leave-one-movie-out cross validation so don't use the test movie
-    train_val_dataset_names = [x for i, x in enumerate(constants.dataset_names) if i != model_index]
-    print('train_val_dataset_names:', train_val_dataset_names)
+    # CH: delete for just one dataset 2/24
+    # train_val_dataset_names = [x for i, x in enumerate(constants.dataset_names) if i != model_index]
+    # print('train_val_dataset_names:', train_val_dataset_names)
+    train_val_dataset_names = dataset_name
 
     if 'paxillin_TIRF' in train_val_dataset_names[0] and \
         ('specialist' in constants.strategy_type or 'single_micro' in constants.strategy_type):
