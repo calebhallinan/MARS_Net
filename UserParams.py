@@ -63,7 +63,7 @@ class UserParams:
                     # if mode == 'train':  # don't crop since I manually move cropped files, commented in 3/15/2021
                     self.dataset_folders = ['../assets/']
                     self.img_folders = ['/img/']
-                    self.mask_folders = ['/mask']
+                    self.mask_folders = ['/mask/']
 
                     self.frame_list = [3]
                     self.dataset_names = ['demo_data']
