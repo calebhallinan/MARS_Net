@@ -33,7 +33,7 @@ def crop_dataset(round_num, dataset_name, repeat_index, input_size, output_size,
         img_train, mask_train = data_generator.augment_data(img_train, mask_train, repeat_index, crop_patches, augmentation_factor)
 
     # ---------- Saving ------------
-    root_path = 'content/MARS_Net/crop/generated/crop_round{}_{}/'.format(round_num, dataset_name)
+    root_path = 'MARS_Net/crop/generated/crop_round{}_{}/'.format(round_num, dataset_name)
     root_path_img = root_path + f'img_repeat{repeat_index}/'
     root_path_mask = root_path + f'mask_repeat{repeat_index}/'
 
