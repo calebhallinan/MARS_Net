@@ -59,7 +59,7 @@ class UserParams:
                 self.crop_split_constant = 1
                 self.img_folder = '/img/'
 
-                if 'multi_micro' in str(self.strategy_type):
+                if 'demo' in str(self.strategy_type):
                     # if mode == 'train':  # don't crop since I manually move cropped files, commented in 3/15/2021
                     self.dataset_folders = ['../assets/']
                     self.img_folders = ['/img/']
