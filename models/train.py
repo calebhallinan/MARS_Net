@@ -45,65 +45,155 @@ def train_model(constants, model_index, frame, repeat_index, history_path):
     # print('train_val_dataset_names:', train_val_dataset_names)
     train_val_dataset_names = dataset_name
 
-    if 'paxillin_TIRF' in train_val_dataset_names[0] and \
-        ('specialist' in constants.strategy_type or 'single_micro' in constants.strategy_type):
-        process_type = 'normalize'
-    elif 'process_clip' in constants.strategy_type:
-        process_type = 'clip'
-    elif 'minmax_normalize' in constants.strategy_type:
-        process_type = 'minmax_normalize'
-    else:
-        process_type = 'standardize'
-    print('process_type', process_type)
+    # if 'paxillin_TIRF' in train_val_dataset_names[0] and \
+    #     ('specialist' in constants.strategy_type or 'single_micro' in constants.strategy_type):
+    #     process_type = 'normalize'
+    # else:
+    process_type = 'standardize'
 
-    # ---------------------- Load Data Generator --------------------------
-    if 'FNA' in constants.strategy_type:
-        train_x, train_y, valid_x, valid_y = get_data_generator_MTL(train_val_dataset_names, repeat_index, args.crop_mode, constants.img_format, 'train')
-        if '_classifier' in constants.strategy_type and 'regressor' not in constants.strategy_type:
-            # get mask class list only
-            train_y = train_y[2]
-            valid_y = valid_y[2]
+    # dataset_train_generator, dataset_validation_generator = get_data_generators(constants.round_num, train_val_dataset_names,
+    #             model_name, frame, repeat_index, constants.img_format, args.batch_size, process_type, img_path, history_path)
+    train_x, train_y, valid_x, valid_y = get_data_generators(constants.round_num, train_val_dataset_names,
+                model_name, frame, repeat_index, constants.img_format, args.batch_size, process_type, history_path)
 
-        elif '_classifier_regressor' in constants.strategy_type:
-            # get mask area list and class list
-            train_y = (train_y[1], train_y[2])
-            valid_y = (valid_y[1], valid_y[2])
+    # ------------------- Model Creation ---------------------------
+    pretrained_weights_path = constants.get_pretrained_weights_path(frame, model_name)
+    if "Res50V2" == str(constants.strategy_type):
+        model = ResNet50V2Keras(args.input_size, args.input_size, args.cropped_boundary, 0, 0,
+                                weights_path=pretrained_weights_path)
+        model.compile(optimizer=Adam(lr=1e-5), loss=['binary_crossentropy'], metrics=[loss.dice_coef])
 
-        else:
-            train_y = [train_y[0], train_x, train_y[1], train_y[2]]
-            valid_y = [valid_y[0], valid_x, valid_y[1], valid_y[2]]
+    elif "InceptionResV2" == str(constants.strategy_type):
+        model = InceptionResV2(args.input_size, args.input_size, args.cropped_boundary, 0, 0,
+                               weights_path=pretrained_weights_path)
+        model.compile(optimizer=Adam(lr=1e-5), loss=['binary_crossentropy'], metrics=[loss.dice_coef])
 
-    elif '_3D' in constants.strategy_type:
-        train_x, train_y, valid_x, valid_y = get_data_generator_3D_all(train_val_dataset_names,
-                        repeat_index, args.crop_mode, constants.img_format, process_type, args.input_depth)
-    elif 'temporal' in constants.strategy_type:
-        aug_batch_size = 64
-        train_x, train_y, valid_x, valid_y = get_data_generator_3D(train_val_dataset_names, frame,
-                        repeat_index, args.crop_mode, constants.img_format, aug_batch_size, process_type)
-    else:
-        aug_batch_size = 64
-        train_x, train_y, valid_x, valid_y = get_data_generators(constants.round_num, train_val_dataset_names,
-                    model_name, frame, repeat_index, args.crop_mode, constants.img_format, aug_batch_size, process_type, history_path)
+    elif "Dense201" == str(constants.strategy_type):
+        model = DenseNet201Keras(args.input_size, args.input_size, args.cropped_boundary, 0, 0,
+                                 weights_path=pretrained_weights_path)
+        model.compile(optimizer=Adam(lr=1e-5), loss=['binary_crossentropy'], metrics=[loss.dice_coef])
 
-    if "deeplabv3" == str(constants.strategy_type) or "EFF_B" in str(constants.strategy_type) \
-            or 'imagenet_pretrained' in str(constants.strategy_type)\
-            or 'vit_classifier' in str(constants.strategy_type):
+    elif "deeplabv3" == str(constants.strategy_type):
         K.set_image_data_format('channels_last')
-        # first channel to last channel
-        train_x = np.moveaxis(train_x, 1, -1)
-        valid_x = np.moveaxis(valid_x, 1, -1)
-        if 'classifier' not in str(constants.strategy_type):
-            train_y = np.moveaxis(train_y, 1, -1)
-            valid_y = np.moveaxis(valid_y, 1, -1)
-    print('train_x', train_x.shape, 'valid_x', valid_x.shape)
-    
-    # ---------------------- Build the model ----------------------
-    # multiple gpu training
-    # strategy = tf.distribute.MirroredStrategy()
-    # with strategy.scope():
-    model = build_model_train(constants, args, frame, model_name)
+        dataset_train = np.moveaxis(dataset_train, 1, -1)  # first channel to last channel
+        dataset_mask = np.moveaxis(dataset_mask, 1, -1)
+        print(dataset_train.dtype, dataset_train.shape)
+        print(dataset_mask.dtype, dataset_mask.shape)
 
-    # ---------------------- Sanity Check the model ----------------------
+        model = Deeplabv3(input_shape=(args.input_size, args.input_size, 3), output_shape=(68, 68), right_crop=0,
+                          bottom_crop=0)
+        model.compile(optimizer=Adam(lr=1e-5), loss=['binary_crossentropy'], metrics=[loss.dice_coef])
+
+    elif "VGG16_dropout" == str(constants.strategy_type):
+        model = VGG16_dropout(args.input_size, args.input_size, args.cropped_boundary, 0, 0,
+                              weights_path=pretrained_weights_path)
+        model.compile(optimizer=Adam(lr=1e-5), loss=['binary_crossentropy'], metrics=[loss.dice_coef])
+
+    elif "VGG16_batchnorm" == str(constants.strategy_type):
+        model = VGG16_batchnorm(args.input_size, args.input_size, args.cropped_boundary, 0, 0,
+                                weights_path=pretrained_weights_path)
+        model.compile(optimizer=Adam(lr=1e-5), loss=['binary_crossentropy'], metrics=[loss.dice_coef])
+
+    elif "VGG16_instancenorm" == str(constants.strategy_type):
+        model = VGG16_instancenorm(args.input_size, args.input_size, args.cropped_boundary, 0, 0,
+                                   weights_path=pretrained_weights_path)
+        model.compile(optimizer=Adam(lr=1e-5), loss=['binary_crossentropy'], metrics=[loss.dice_coef])
+
+    elif "VGG16_movie3" == str(constants.strategy_type):
+        model = VGG16_movie(args.input_size, args.input_size, args.cropped_boundary, 0, 0,
+                            weights_path=pretrained_weights_path)
+        model.compile(optimizer=Adam(lr=1e-5), loss=loss.temporal_cross_entropy, metrics=[loss.dice_coef])
+
+    elif "VGG16_dice" == str(constants.strategy_type):
+        model = VGG16(args.input_size, args.input_size, args.cropped_boundary, 0, 0,
+                      weights_path=pretrained_weights_path)
+        model.compile(optimizer=Adam(lr=1e-5), loss=[loss.dice_coef], metrics=['binary_crossentropy'])
+
+    elif "VGG16_l2" == str(constants.strategy_type):
+        model = VGG16_l2(args.input_size, args.input_size, args.cropped_boundary, 0, 0,
+                         weights_path=pretrained_weights_path)
+        model.compile(optimizer=Adam(lr=1e-5), loss=['binary_crossentropy'], metrics=[loss.dice_coef])
+
+    elif "VGG16_dac_input256" == constants.strategy_type:
+        model = VGG16_dac(args.input_size, args.input_size, args.cropped_boundary, 0, 0,
+                          weights_path=pretrained_weights_path)
+        model.compile(optimizer=Adam(lr=1e-5), loss=['binary_crossentropy'], metrics=[loss.dice_coef])
+
+    elif "VGG16_spp_input256" == constants.strategy_type:
+        model = VGG16_spp(args.input_size, args.input_size, args.cropped_boundary, 0, 0,
+                          weights_path=pretrained_weights_path)
+        model.compile(optimizer=Adam(lr=1e-5), loss=['binary_crossentropy'], metrics=[loss.dice_coef])
+
+    elif "VGG16_no_pretrain" == str(constants.strategy_type):
+        model = VGG16(args.input_size, args.input_size, args.cropped_boundary, 0, 0,
+                      weights_path=pretrained_weights_path, encoder_weights=None)
+        model.compile(optimizer=Adam(lr=1e-5), loss=['binary_crossentropy'], metrics=[loss.dice_coef])
+
+    elif "VGG16" in str(constants.strategy_type):
+        model = VGG16(args.input_size, args.input_size, args.cropped_boundary, 0, 0,
+                      weights_path=pretrained_weights_path)
+        model.compile(optimizer=Adam(lr=1e-5), loss=['binary_crossentropy'], metrics=[loss.dice_coef])
+
+    elif "VGG19_dropout_dac_input256" == str(constants.strategy_type):
+        model = VGG19_dropout_dac(args.input_size, args.input_size, args.cropped_boundary, 0, 0,
+                                  weights_path=pretrained_weights_path)
+        model.compile(optimizer=Adam(lr=1e-5), loss=['binary_crossentropy'], metrics=[loss.dice_coef])
+
+    elif "VGG19_dropout_feature_extractor" in str(constants.strategy_type):
+        model = VGG19_dropout_feature_extractor(args.input_size, args.input_size, args.cropped_boundary, 0, 0,
+                                                weights_path=pretrained_weights_path)
+        model.compile(optimizer=Adam(lr=1e-5), loss=['binary_crossentropy', loss.zero_loss],
+                      metrics=[loss.dice_coef, loss.zero_loss])
+
+    elif "VGG19_batchnorm_dropout" in str(constants.strategy_type):
+        model = VGG19_batchnorm_dropout(args.input_size, args.input_size, args.cropped_boundary, 0, 0,
+                                        weights_path=pretrained_weights_path)
+        model.compile(optimizer=Adam(lr=1e-5), loss=['binary_crossentropy'], metrics=[loss.dice_coef])
+
+    elif "VGG19_dropout" in str(constants.strategy_type):
+        model = VGG19_dropout(args.input_size, args.input_size, args.cropped_boundary, 0, 0,
+                              weights_path=pretrained_weights_path)
+        model.compile(optimizer=Adam(lr=1e-5), loss=['binary_crossentropy'], metrics=[loss.dice_coef])
+
+    elif "VGG19_batchnorm" == str(constants.strategy_type):
+        model = VGG19_batchnorm(args.input_size, args.input_size, args.cropped_boundary, 0, 0,
+                                weights_path=pretrained_weights_path)
+        model.compile(optimizer=Adam(lr=1e-5), loss=['binary_crossentropy'], metrics=[loss.dice_coef])
+
+    elif "VGG19_no_pretrain" == str(constants.strategy_type):
+        model = VGG19(args.input_size, args.input_size, args.cropped_boundary, 0, 0,
+                      weights_path=pretrained_weights_path, encoder_weights=None)
+        model.compile(optimizer=Adam(lr=1e-5), loss=['binary_crossentropy'], metrics=[loss.dice_coef])
+
+    elif "VGG19" in str(constants.strategy_type):
+        model = VGG19(args.input_size, args.input_size, args.cropped_boundary, 0, 0,
+                      weights_path=pretrained_weights_path)
+        model.compile(optimizer=Adam(lr=1e-5), loss=['binary_crossentropy'], metrics=[loss.dice_coef])
+
+    elif "EFF_B7" == str(constants.strategy_type) or "EFF_B7_no_preprocessing" == str(constants.strategy_type):
+        K.set_image_data_format('channels_last')
+        dataset_train = np.moveaxis(dataset_train, 1, -1)  # first channel to last channel
+        dataset_mask = np.moveaxis(dataset_mask, 1, -1)
+        print(dataset_train.dtype, dataset_train.shape)
+        print(dataset_mask.dtype, dataset_mask.shape)
+
+        model = EFF_B7(args.input_size, args.input_size, args.cropped_boundary, 0, 0,
+                       weights_path=pretrained_weights_path)
+        model.compile(optimizer=Adam(lr=1e-5), loss=['binary_crossentropy'], metrics=[loss.dice_coef])
+
+    elif "unet_feature_extractor" in str(constants.strategy_type):
+        model = UNet_feature_extractor(args.input_size, args.input_size, args.cropped_boundary, 0, 0,
+                                       weights_path=pretrained_weights_path)
+        model.compile(optimizer=Adam(lr=1e-5), loss=['binary_crossentropy', loss.zero_loss],
+                      metrics=[loss.dice_coef, loss.zero_loss])
+
+    elif "unet" in str(constants.strategy_type):
+        model = UNet(args.input_size, args.input_size, args.cropped_boundary, 0, 0,
+                     weights_path=pretrained_weights_path)
+        model.compile(optimizer=Adam(lr=1e-5), loss=['binary_crossentropy'], metrics=[loss.dice_coef])
+
+
+    # ------------ Sanity Check the Model ------------
     print(model.summary())
     print('Num of layers: ', len(model.layers))
     # print('FLOPS: ', get_flops())  # run this after model compilation
@@ -113,19 +203,15 @@ def train_model(constants, model_index, frame, repeat_index, history_path):
                                                                                   constants.strategy_type),
                    show_shapes=True, show_layer_names=True, dpi=144)
 
-    # ---------------------- Fit the Model ----------------------
-
+    # ------------ Fit the Model ------------
     print('Fit Model...', args.epochs, args.patience)
-    reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=3, verbose=1, min_lr=1e-6)
     earlyStopping = EarlyStopping(monitor='val_loss', patience=args.patience, verbose=0, mode='auto')  # args.patience
     model_checkpoint = ModelCheckpoint(
         'results/model_round{}_{}/model_frame{}_{}_repeat{}.hdf5'.format(constants.round_num, constants.strategy_type,
                                                                          str(frame), model_name,
                                                                          str(repeat_index)),
         monitor='val_loss', save_best_only=True)
-
     time_callback = TimeHistory()
-    trainable_loss_weights_callback = TrainableLossWeightsCallback(model)
     logdir = 'results/history_round{}_{}/tensorboard_frame{}_{}_repeat{}_{}'.format(constants.round_num,
                                                                                 constants.strategy_type, str(frame),
                                                                                 model_name,
@@ -133,26 +219,20 @@ def train_model(constants, model_index, frame, repeat_index, history_path):
                                                         datetime.now().strftime("%Y%m%d-%H%M%S"))
 
     # reference https://github.com/tensorflow/tensorflow/blob/v2.4.1/tensorflow/python/keras/engine/training.py#L1823-L1861
-    if "VGG19_classifier_custom_loss" in str(constants.strategy_type) or "VGG19_MTL_auto" in str(constants.strategy_type):
-        hist = model.fit([train_x, *train_y],
-                         epochs=args.epochs,
-                         verbose=1,
-                         workers=1,
-                         batch_size=args.train_batch_size,
-                         validation_data=([valid_x, *valid_y]),
-                         callbacks=[model_checkpoint, earlyStopping, time_callback, trainable_loss_weights_callback, TensorBoard(log_dir=logdir)])
-        hist.history['trainable_loss_weights'] = trainable_loss_weights_callback.history_of_trainable_loss_weights
+    # hist = model.fit(dataset_train_generator,
+    #             epochs=args.epochs,
+    #             verbose=1,
+    #             workers=1,
+    #             validation_data=dataset_validation_generator,
+    #             callbacks=[model_checkpoint, earlyStopping, time_callback, TensorBoard(log_dir=logdir)])
+    hist = model.fit(train_x, train_y,
+                     epochs=args.epochs,
+                     verbose=1,
+                     workers=1,
+                     validation_data=(valid_x, valid_y),
+                     callbacks=[model_checkpoint, earlyStopping, time_callback, TensorBoard(log_dir=logdir)])
 
-    else:
-        hist = model.fit(train_x, train_y,
-                         epochs=args.epochs,
-                         verbose=1,
-                         workers=1,
-                         batch_size = args.train_batch_size,
-                         validation_data=(valid_x, valid_y),
-                         callbacks=[model_checkpoint, reduce_lr, earlyStopping, time_callback, TensorBoard(log_dir=logdir)])
-
-    # ----------------------  Save the Training History ----------------------
+    # ------------ Save the History ------------
     hist.history['times'] = time_callback.times
     print('Save History...')
     np.save('results/history_round{}_{}/history_frame{}_{}_repeat{}.npy'.format(constants.round_num,
@@ -177,7 +257,9 @@ if __name__ == "__main__":
         os.makedirs('results/model_round{}_{}/'.format(constants.round_num, constants.strategy_type))
     for repeat_index in range(constants.REPEAT_MAX):
         for frame_index in range(len(constants.frame_list)):
-            for model_index in range(len(constants.model_names)):
+            # CH - change model index depending on model size 09/20/21
+            # for model_index in range(len(constants.model_names)):
+            for model_index in range(0,1):
                 frame = constants.frame_list[frame_index]
                 start_time = time.time()
                 train_model(constants, model_index, frame, repeat_index, history_path)
