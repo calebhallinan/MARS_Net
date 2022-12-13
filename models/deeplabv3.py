@@ -33,7 +33,7 @@ from tensorflow.python.keras.layers import Activation
 from tensorflow.python.keras.layers import Concatenate
 from tensorflow.python.keras.layers import Add
 from tensorflow.python.keras.layers import Dropout
-from tensorflow.python.keras.layers import BatchNormalization
+from tensorflow.keras.layers import BatchNormalization
 from tensorflow.python.keras.layers import Conv2D
 from tensorflow.python.keras.layers import DepthwiseConv2D
 from tensorflow.python.keras.layers import ZeroPadding2D, Cropping2D
@@ -41,7 +41,7 @@ from tensorflow.python.keras.layers import GlobalAveragePooling2D
 from tensorflow.python.keras.utils.layer_utils import get_source_inputs
 from tensorflow.python.keras.utils.data_utils import get_file
 from tensorflow.python.keras import backend as K
-from tensorflow.python.keras.applications.imagenet_utils import preprocess_input
+from tensorflow.keras.applications.imagenet_utils import preprocess_input
 
 WEIGHTS_PATH_X = "https://github.com/bonlime/keras-deeplab-v3-plus/releases/download/1.1/deeplabv3_xception_tf_dim_ordering_tf_kernels.h5"
 WEIGHTS_PATH_MOBILE = "https://github.com/bonlime/keras-deeplab-v3-plus/releases/download/1.1/deeplabv3_mobilenetv2_tf_dim_ordering_tf_kernels.h5"
