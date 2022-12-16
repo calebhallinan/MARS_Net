@@ -33,7 +33,7 @@ def VGG16(img_rows, img_cols, crop_margin, right_crop, bottom_crop, weights_path
     layers = [base_model.get_layer(name).output for name in layer_names]
 
     encoder_model = tf.keras.Model(inputs=base_model.input, outputs=layers)
-    plot_model(encoder_model, to_file='model_plots/encoder_VGG16_train.png', show_shapes=True, show_layer_names=True, dpi=144)
+    plot_model(encoder_model, to_file='/content/MARS_Net/models/model_plots/encoder_VGG16_train.png', show_shapes=True, show_layer_names=True, dpi=144)
 
     skips = encoder_model(inputs)
 
