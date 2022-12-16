@@ -61,12 +61,12 @@ class UserParams:
 
                 if 'demo' in str(self.strategy_type):
                     # if mode == 'train':  # don't crop since I manually move cropped files, commented in 3/15/2021
-                    self.dataset_folders = ['../assets/']
+                    self.dataset_folders = ['/content/MARS_Net/assets/']
                     self.img_folders = ['/img/']
                     self.mask_folders = ['/mask/']
 
                     self.frame_list = [3]
-                    self.dataset_names = ['demo_data']
+                    self.dataset_names = ['C2C12_myoblast_training']
                     self.model_names = ['A']
                     self.REPEAT_MAX = 1
 
@@ -722,8 +722,8 @@ class UserParams:
             batch_size = 128
         else:
             input_size = 128
-            crop_patches = 200
-            batch_size = 128
+            crop_patches = 20
+            batch_size = 10
 
         output_size = input_size-60
 
@@ -770,7 +770,7 @@ class UserParams:
             batch_size = 64
         else:
             input_size = 128
-            batch_size = 64
+            batch_size = 10
         
         parser.add_argument("--input_size", type = int, default = input_size)
         parser.add_argument("--cropped_boundary", type = int, default = 30)
