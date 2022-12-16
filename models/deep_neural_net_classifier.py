@@ -13,9 +13,9 @@ GlobalAveragePooling2D, Dense, Flatten, ReLU)
 from tensorflow.keras import layers
 from tensorflow.keras.initializers import glorot_uniform
 from tensorflow.keras.regularizers import l2
-import deep_neural_net_blocks as net_block
+import content.MARS_Net.models.deep_neural_net_blocks as net_block
 from tensorflow.keras.utils import plot_model, get_file
-from debug_utils import log_function_call
+from content.MARS_Net.models.debug_utils import log_function_call
 
 
 @log_function_call
