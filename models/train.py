@@ -5,6 +5,7 @@ Date 3/14/2021
 To train models on datasets that are cropped and processed
 '''
 
+
 import sys
 sys.path.append('..')
 sys.path.append('../data_handle')
@@ -16,18 +17,22 @@ import gc
 from datetime import datetime
 
 import tensorflow as tf
+print(tf.test.gpu_device_name())
 from tensorflow.keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, EarlyStopping, TensorBoard
 from tensorflow.keras import backend as K
 from tensorflow.keras.utils import plot_model
 
-from debug_utils import *
+from content.MARS_Net.models.debug_utils import *
 from content.MARS_Net.UserParams import UserParams
-from custom_callback import TimeHistory, TrainableLossWeightsCallback
-from model_builder import build_model_train
+from content.MARS_Net.models.custom_callback import TimeHistory, TrainableLossWeightsCallback
+from content.MARS_Net.models.model_builder import build_model_train
 from content.MARS_Net.data_handle.data_generator_MTL import get_data_generator_MTL
 from content.MARS_Net.data_handle.data_generator_classifier import get_data_generator_classifier
 from content.MARS_Net.data_handle.train_data_generator import get_data_generators
 from content.MARS_Net.data_handle.train_data_generator_3D import get_data_generator_3D, get_data_generator_3D_all
+from content.MARS_Net.models.deep_neural_net import *
+from tensorflow.keras.optimizers import Adam
+import content.MARS_Net.models.loss as loss
 
 
 def train_model(constants, model_index, frame, repeat_index, history_path):
@@ -199,7 +204,7 @@ def train_model(constants, model_index, frame, repeat_index, history_path):
     # print('FLOPS: ', get_flops())  # run this after model compilation
     # check_loaded_weights(constants)
     if repeat_index == 0:
-        plot_model(model, to_file='model_plots/model_round{}_{}_train.png'.format(constants.round_num,
+        plot_model(model, to_file='/content/MARS_Net/models/model_plots/model_round{}_{}_train.png'.format(constants.round_num,
                                                                                   constants.strategy_type),
                    show_shapes=True, show_layer_names=True, dpi=144)
 
@@ -207,12 +212,12 @@ def train_model(constants, model_index, frame, repeat_index, history_path):
     print('Fit Model...', args.epochs, args.patience)
     earlyStopping = EarlyStopping(monitor='val_loss', patience=args.patience, verbose=0, mode='auto')  # args.patience
     model_checkpoint = ModelCheckpoint(
-        'results/model_round{}_{}/model_frame{}_{}_repeat{}.hdf5'.format(constants.round_num, constants.strategy_type,
+        '/content/MARS_Net/models/results/model_round{}_{}/model_frame{}_{}_repeat{}.hdf5'.format(constants.round_num, constants.strategy_type,
                                                                          str(frame), model_name,
                                                                          str(repeat_index)),
         monitor='val_loss', save_best_only=True)
     time_callback = TimeHistory()
-    logdir = 'results/history_round{}_{}/tensorboard_frame{}_{}_repeat{}_{}'.format(constants.round_num,
+    logdir = '/content/MARS_Net/models/results/history_round{}_{}/tensorboard_frame{}_{}_repeat{}_{}'.format(constants.round_num,
                                                                                 constants.strategy_type, str(frame),
                                                                                 model_name,
                                                                                 str(repeat_index),
@@ -235,7 +240,7 @@ def train_model(constants, model_index, frame, repeat_index, history_path):
     # ------------ Save the History ------------
     hist.history['times'] = time_callback.times
     print('Save History...')
-    np.save('results/history_round{}_{}/history_frame{}_{}_repeat{}.npy'.format(constants.round_num,
+    np.save('/content/MARS_Net/models/results/history_round{}_{}/history_frame{}_{}_repeat{}.npy'.format(constants.round_num,
                                                                                 constants.strategy_type, str(frame),
                                                                                 model_name,
                                                                                 str(repeat_index)), hist.history)
@@ -248,13 +253,17 @@ if __name__ == "__main__":
     K.set_image_data_format('channels_first')
     print(K.image_data_format())
     constants = UserParams('train')
+    history_path = '/content/MARS_Net/models/results/history_round{}_{}/'.format(constants.round_num, constants.strategy_type)
+    model_path = '/content/MARS_Net/models/model_plots/'
 
-    history_path = 'results/history_round{}_{}/'.format(constants.round_num, constants.strategy_type)
-    print(history_path)
     if not os.path.exists(history_path):
         os.makedirs(history_path)
-    if not os.path.exists('results/model_round{}_{}/'.format(constants.round_num, constants.strategy_type)):
-        os.makedirs('results/model_round{}_{}/'.format(constants.round_num, constants.strategy_type))
+    if not os.path.exists('/content/MARS_Net/models/results/model_round{}_{}/'.format(constants.round_num, constants.strategy_type)):
+        os.makedirs('/content/MARS_Net/models/results/model_round{}_{}/'.format(constants.round_num, constants.strategy_type))
+    # caleb added for model plots
+    if not os.path.exists(model_path):
+        os.makedirs(model_path)
+
     for repeat_index in range(constants.REPEAT_MAX):
         for frame_index in range(len(constants.frame_list)):
             # CH - change model index depending on model size 09/20/21
