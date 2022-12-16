@@ -815,7 +815,7 @@ class UserParams:
 
     def get_crop_path(self, model_name, dataset_name, frame, split_index, repeat_index):
         # specify the folder in which to save cropped result
-        root_path = '../crop/crop_results/crop_round{}_{}/'.format(self.round_num, self.strategy_type)
+        root_path = '/content/MARS_Net/crop/crop_results/crop_round{}_{}/'.format(self.round_num, self.strategy_type)
 
         if self.round_num == 1:
             if 'cryptic' in str(self.strategy_type):
@@ -890,7 +890,7 @@ class UserParams:
         
         
     def get_trained_weights_path(self, frame, model_name, repeat_index, root_path = ''):
-        weights_path = 'results/model_round{}_{}/model_'.format(self.round_num, self.strategy_type)
+        weights_path = '/content/MARS_Net/models/results/model_round{}_{}/model_'.format(self.round_num, self.strategy_type)
 
         # special case for student learning
         if self.round_num == 1:
