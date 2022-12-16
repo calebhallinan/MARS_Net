@@ -8,7 +8,7 @@ To evaluate classification results with respect to the ground truth label
 import sys
 sys.path.append('..')
 import numpy as np
-from UserParams import UserParams
+from content.MARS_Net.UserParams import UserParams
 from sklearn.metrics import confusion_matrix, matthews_corrcoef, precision_score, recall_score, f1_score, accuracy_score
 
 
