@@ -11,8 +11,8 @@ from tensorflow.keras.layers import (Input, concatenate, Subtract, Add, Multiply
                                      Conv3D, MaxPooling3D, UpSampling3D, Cropping3D, Dropout)
 from tensorflow.keras.utils import get_file
 
-import deep_neural_net_blocks as net_block
-from debug_utils import log_function_call
+import content.MARS_Net.models.deep_neural_net_blocks as net_block
+from content.MARS_Net.models.debug_utils import log_function_call
 import tensorflow.keras.backend as K
 import math
 
