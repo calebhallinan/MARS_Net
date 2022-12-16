@@ -30,7 +30,7 @@ def get_data_generators(round_num, dataset_names, model_name, frame, repeat_inde
     set_training_dataset_names(round_num, dataset_names, model_name, frame, repeat_index, img_format, save_path)
     x_train_filenames, x_val_filenames, y_train_filenames, y_val_filenames = get_training_dataset_names(model_name, frame, repeat_index, save_path)
 
-    batch_size = 16
+    batch_size = 8
     # augment images in memory
     train_x, train_y = getAugmentedImages(x_train_filenames, y_train_filenames, batch_size, process_type)
     valid_x, valid_y = getAugmentedImages(x_val_filenames, y_val_filenames, batch_size, process_type)
