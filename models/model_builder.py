@@ -5,22 +5,22 @@ Date 6/2/2021
 To build model for train.py and predict.py
 '''
 
-from deeplabv3 import Deeplabv3
-from deep_neural_net_classifier import *
-from deep_neural_net_MTL import *
-from deep_neural_net import *
-from deep_neural_net_3D import *
-from deep_neural_net_attn import *
-from deep_neural_net_layer import *
-from model_utils import get_MTL_weights, get_MTL_auto_remove_task
-import loss
+from content.MARS_Net.models.deeplabv3 import Deeplabv3
+from content.MARS_Net.models.deep_neural_net_classifier import *
+from content.MARS_Net.models.deep_neural_net_MTL import *
+from content.MARS_Net.models.deep_neural_net import *
+from content.MARS_Net.models.deep_neural_net_3D import *
+from content.MARS_Net.models.deep_neural_net_attn import *
+from content.MARS_Net.models.deep_neural_net_layer import *
+from content.MARS_Net.models.model_utils import get_MTL_weights, get_MTL_auto_remove_task
+import content.MARS_Net.models.loss
 
 import numpy as np
 from tensorflow.keras import backend as K
 from tensorflow.keras.optimizers import Adam, SGD
 if tf.__version__.split('.')[0] == '2':
     import tensorflow_addons as tfa
-from sam import SAMModel
+from content.MARS_Net.models.sam import SAMModel
 
 
 def build_model_predict(constants, frame, repeat_index, model_name, image_rows, image_cols, orig_rows, orig_cols):
