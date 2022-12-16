@@ -11,8 +11,8 @@ AveragePooling2D, ZeroPadding2D, UpSampling2D, Cropping2D, Conv2DTranspose,Batch
 GlobalAveragePooling2D, Dense, Flatten, ReLU)
 from tensorflow.keras.initializers import glorot_uniform
 from tensorflow.keras import regularizers
-from debug_utils import log_function_call
-import deep_neural_net_blocks as net_block
+from content.MARS_Net.models.debug_utils import log_function_call
+import content.MARS_Net.models.deep_neural_net_blocks as net_block
 
 @log_function_call
 def VGG19D_se(img_rows, img_cols, crop_margin, right_crop, bottom_crop, weights_path):
