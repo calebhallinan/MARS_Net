@@ -400,7 +400,7 @@ class UserParams:
 
                 elif 'Multi_VGG19D' in str(self.strategy_type) or 'Single_Unet' in str(self.strategy_type):
                     self.dataset_folders = ['../assets/']
-                    self.img_folders = ['/img_all/']
+                    self.img_folders = ['/control_100by3/']
                     self.mask_folders = ['/mask_fixed/']
 
                     self.frame_list = [2]
@@ -411,12 +411,12 @@ class UserParams:
 
                 elif 'demo' in str(self.strategy_type):
                     # if mode == 'train':  # don't crop since I manually move cropped files, commented in 3/15/2021
-                    self.dataset_folders = ['../assets/']
+                    self.dataset_folders = ['/content/MARS_Net/assets/']
                     self.img_folders = ['/img/']
                     self.mask_folders = ['/mask']
 
                     self.frame_list = [3]
-                    self.dataset_names = ['demo_data_all']
+                    self.dataset_names = ['C2C12_myoblast_training']
                     self.model_names = ['A']
                     self.REPEAT_MAX = 1
 
