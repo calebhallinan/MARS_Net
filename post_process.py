@@ -24,6 +24,8 @@ predicted_img_folder = "/content/MARS_Net/models/results/predict_wholeframe_roun
 # name of model
 model_name = "demo_VGG19_dropout"
 
+class_label = 'control_100by3'
+
 # where to save images
 save_folder = "/content/MARS_Net/post_processed/"
 
@@ -31,7 +33,7 @@ save_folder = "/content/MARS_Net/post_processed/"
 img_type = "png"
 
 # file location to original images if you want to crop those
-orig_img_folder = "/content/MARS_Net/assets/C2C12_myoblast_training/control_200_350/"
+orig_img_folder = "/content/MARS_Net/assets/C2C12_myoblast_training/"+class_label+"/"
 
 
 ########################################################################
@@ -47,10 +49,10 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 logging.info('================= Reading and Processing Data =================')
 
 # make save folder
-os.makedirs(os.path.dirname(save_folder+model_name), exist_ok=True)
-os.makedirs(os.path.dirname(save_folder+model_name+'/'+"postprocessed_images/"), exist_ok=True)
-os.makedirs(os.path.dirname(save_folder+model_name+'/'+"original_images/"), exist_ok=True)
-os.makedirs(os.path.dirname(save_folder+model_name+'/'+"overlay_images/"), exist_ok=True)
+os.makedirs(os.path.dirname(save_folder+model_name+class_label), exist_ok=True)
+os.makedirs(os.path.dirname(save_folder+model_name+class_label+'/'+"postprocessed_images/"), exist_ok=True)
+os.makedirs(os.path.dirname(save_folder+model_name+class_label+'/'+"original_images/"), exist_ok=True)
+os.makedirs(os.path.dirname(save_folder+model_name+class_label+'/'+"overlay_images/"), exist_ok=True)
 
 
 files = glob.glob(predicted_img_folder + "*."+img_type)
