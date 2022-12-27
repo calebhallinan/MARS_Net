@@ -49,10 +49,10 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 logging.info('================= Reading and Processing Data =================')
 
 # make save folder
-os.makedirs(os.path.dirname(save_folder+model_name+class_label), exist_ok=True)
-os.makedirs(os.path.dirname(save_folder+model_name+class_label+'/'+"postprocessed_images/"), exist_ok=True)
-os.makedirs(os.path.dirname(save_folder+model_name+class_label+'/'+"original_images/"), exist_ok=True)
-os.makedirs(os.path.dirname(save_folder+model_name+class_label+'/'+"overlay_images/"), exist_ok=True)
+os.makedirs(os.path.dirname(save_folder+model_name+"_"+class_label), exist_ok=True)
+os.makedirs(os.path.dirname(save_folder+model_name+"_"+class_label+'/'+"postprocessed_images/"), exist_ok=True)
+os.makedirs(os.path.dirname(save_folder+model_name+"_"+class_label+'/'+"original_images/"), exist_ok=True)
+os.makedirs(os.path.dirname(save_folder+model_name+"_"+class_label+'/'+"overlay_images/"), exist_ok=True)
 
 
 files = glob.glob(predicted_img_folder + "*."+img_type)
@@ -119,10 +119,10 @@ for i in range(0,len(images)):
 
     # save images
     file_name = 'postp_image_{}.png'.format(str(img_num))
-    cv2.imwrite(save_folder+model_name+'/'+"postprocessed_images/"+ file_name ,result)
+    cv2.imwrite(save_folder+model_name+"_"+class_label+'/'+"postprocessed_images/"+ file_name ,result)
 
     file_name_overlay = 'overlay_image_{}.png'.format(str(img_num))
-    cv2.imwrite(save_folder+model_name+'/'+"overlay_images/"+ file_name_overlay, overlay)
+    cv2.imwrite(save_folder+model_name+"_"+class_label+'/'+"overlay_images/"+ file_name_overlay, overlay)
 
     file_name_orig = 'original_image_{}.png'.format(str(img_num))
-    cv2.imwrite(save_folder+model_name+'/'+"original_images/"+ file_name_orig ,img_original)
+    cv2.imwrite(save_folder+model_name+"_"+class_label+'/'+"original_images/"+ file_name_orig ,img_original)
