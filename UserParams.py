@@ -63,10 +63,10 @@ class UserParams:
                     # if mode == 'train':  # don't crop since I manually move cropped files, commented in 3/15/2021
                     self.dataset_folders = ['/content/MARS_Net/assets/']
                     self.img_folders = ['/img/']
-                    self.mask_folders = ['/mask/']
+                    self.mask_folders = ['/masks/']
 
-                    self.frame_list = [3]
-                    self.dataset_names = ['C2C12_myoblast_training']
+                    self.frame_list = [15]
+                    self.dataset_names = ['demo_data']
                     self.model_names = ['A']
                     self.REPEAT_MAX = 1
 
