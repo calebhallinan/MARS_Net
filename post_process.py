@@ -19,12 +19,12 @@ from skimage import io
 
 ### Parameters user sets: ###
 # location of where predicted images are
-predicted_img_folder = "/content/MARS_Net/models/results/predict_wholeframe_round1_demo_VGG19_dropout/C2C12_myoblast_training/frame3_A_repeat0/"
+predicted_img_folder = "/content/MARS_Net/models/results/predict_wholeframe_round1_demo_VGG19_dropout/demo_data/frame15_A_repeat0/"
 
 # name of model
 model_name = "demo_VGG19_dropout"
 
-class_label = 'control_100by3'
+class_label = 'img_all'
 
 # where to save images
 save_folder = "/content/MARS_Net/post_processed/"
@@ -33,7 +33,7 @@ save_folder = "/content/MARS_Net/post_processed/"
 img_type = "png"
 
 # file location to original images if you want to crop those
-orig_img_folder = "/content/MARS_Net/assets/C2C12_myoblast_training/"+class_label+"/"
+orig_img_folder = "/content/MARS_Net/assets/demo_data/"+class_label+"/"
 
 
 ########################################################################
